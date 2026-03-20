@@ -1,0 +1,6 @@
+node_modules/
+coverege/
+logs/
+drizzle/
+*.log
+package-lock.json

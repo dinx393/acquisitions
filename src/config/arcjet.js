@@ -28,7 +28,6 @@ const aj = arcjet({
             max: 5
         })
     ],
-  ],
 });
 
 export default aj;

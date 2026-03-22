@@ -1,0 +1,11 @@
+{"level":"info","message":"hello from Acqusition!","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:14:04:18 +0000] \"GET / HTTP/1.1\" 200 27 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:14:12:04 +0000] \"GET /api HTTP/1.1\" 200 40 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:14:16:09 +0000] \"GET /api/auth/sing-in HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:46:40 +0000] \"GET /api/auth/sing-up HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:49:24 +0000] \"GET /api/auth/sign-up HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:50:06 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 404 156 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:50:13 +0000] \"GET /api/auth/sign-up HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:54:36 +0000] \"GET /api/auth/sign-up HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:55:04 +0000] \"GET /api/auth/sign-up HTTP/1.1\" 404 155 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [21/Mar/2026:18:55:10 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 200 31 \"-\" \"HTTPie/3.2.4\"","service":"acquisitions-api"}

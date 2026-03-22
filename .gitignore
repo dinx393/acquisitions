@@ -60,3 +60,4 @@ ssl/
 *.pem
 *.key
 *.crt
+.neon_local/

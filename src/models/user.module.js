@@ -1,12 +1,24 @@
-import {pgTable, serial, timestamp, varchar} from "drizzle-orm/pg-core";
+// db.js
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+import path from 'path';
 
-export const users = pgTable('users', {
-    id: serial('id').primaryKey(),
-    name: varchar('name', { length: 255 }).notNull(),
-    email: varchar('email', { length: 255 }).notNull().unique(),
-    password: varchar('password', { length: 255 }).notNull(),
-    role: varchar('role', { length: 50 }).notNull().default('user'),
-    created_at: timestamp().defaultNow().notNull(),
-    updated_at: timestamp().defaultNow().notNull(),
+const dbPath = path.resolve('db/dev.db');
 
+export const db = await open({
+  filename: dbPath,
+  driver: sqlite3.Database
 });
+
+// Создание таблицы users, если нет
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`); 

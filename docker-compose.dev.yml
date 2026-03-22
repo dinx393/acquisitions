@@ -1,31 +1,5 @@
-version: '3.8'
-
+# docker-compose.dev.yml
 services:
-  # Neon Local proxy for development
-  neon-local:
-    image: neondatabase/neon-local:latest
-    platform: linux/amd64
-    container_name: neon-local-proxy
-    ports:
-      - "5432:5432"
-    environment:
-      # Configure Neon Local to create ephemeral branches
-      - NEON_API_KEY=${NEON_API_KEY}
-      - NEON_PROJECT_ID=${NEON_PROJECT_ID}
-      # Создает эфемерную ветку от главной ветки
-      - PARENT_BRANCH_ID=${PARENT_BRANCH_ID:-main}
-    volumes:
-      - neon_local_data:/var/lib/postgresql/data
-      - ./logs:/var/log/neon
-    networks:
-      - acquisitions-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d acquisitions"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  # Main application
   app:
     build:
       context: .
@@ -33,54 +7,11 @@ services:
       target: development
     container_name: acquisitions-app-dev
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://neon:npg@neon-local:5432/acquisitions
-      - PORT=3000
-      - LOG_LEVEL=debug
-      - JWT_SECRET=supersecretkey123
+      - "3001:3000"   # свободный порт для dev
+    env_file:
+      - .env.development
     volumes:
-      # Mount source code for hot reloading in development
-      - ./src:/app/src:ro
-      - ./logs:/app/logs
-      - /app/node_modules  # Avoid overwriting node_modules
-    depends_on:
-      neon-local:
-        condition: service_healthy
-    networks:
-      - acquisitions-network
-    restart: unless-stopped
+      - ./:/app
+      - /app/node_modules
+      - ./db/dev.db:/app/db/dev.db
     command: npm run dev
-
-  # Optional: Drizzle Studio for database management
-  drizzle-studio:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
-    container_name: drizzle-studio-dev
-    ports:
-      - "4983:4983"
-    environment:
-      - DATABASE_URL=postgresql://neon:npg@neon-local:5432/acquisitions
-    volumes:
-      - ./src:/app/src:ro
-      - ./drizzle:/app/drizzle:ro
-      - ./drizzle.config.js:/app/drizzle.config.js:ro
-    depends_on:
-      neon-local:
-        condition: service_healthy
-    networks:
-      - acquisitions-network
-    command: npm run db:studio
-    profiles:
-      - tools  # Only start with --profile tools
-
-volumes:
-  neon_local_data:
-    driver: local
-
-networks:
-  acquisitions-network:
-    driver: bridge

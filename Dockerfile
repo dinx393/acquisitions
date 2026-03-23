@@ -22,12 +22,10 @@ RUN npm ci --omit=dev --no-cache && npm cache clean --force
 
 # Копируем исходный код
 COPY --chown=nodejs:nodejs ./src ./src
-COPY --chown=nodejs:nodejs ./db/prod.db ./db/prod.db
-COPY --chown=nodejs:nodejs ./logger.js ./logger.js
-COPY --chown=nodejs:nodejs ./database.js ./database.js
 
-# Создаем папку для логов
-RUN mkdir -p /app/logs && chmod 777 /app/logs
+# Создаем необходимые директории
+RUN mkdir -p /app/logs /app/db && \
+    chown -R nodejs:nodejs /app/logs /app/db
 
 USER nodejs
 EXPOSE 3000

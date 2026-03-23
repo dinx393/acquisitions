@@ -1,4 +1,4 @@
-i// auth.controller.js
+// auth.controller.js
 import logger from '#config/logger.js';
 import { createUser, authenticateUser } from '#services/auth.services.js';
 import { formatValidationError } from '#utils/format.js';

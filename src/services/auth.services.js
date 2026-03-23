@@ -1,8 +1,9 @@
 // auth.services.js
 import logger from '#config/logger.js';
 import bcrypt from 'bcrypt';
-import db from '#db/db.js'; // твоя SQLite база
+import { db } from '#config/database.js';
 
+// Хеширование пароля
 export const hashPassword = async (password) => {
   try {
     return await bcrypt.hash(password, 10);
@@ -12,6 +13,7 @@ export const hashPassword = async (password) => {
   }
 };
 
+// Проверка пароля
 export const comparePassword = async (password, hashedPassword) => {
   try {
     return await bcrypt.compare(password, hashedPassword);
@@ -21,76 +23,69 @@ export const comparePassword = async (password, hashedPassword) => {
   }
 };
 
-export const createUser = ({ name, email, password, role = 'user' }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      db.get(`SELECT * FROM users WHERE email = ?`, [email], async (err, row) => {
-        if (err) {
-          logger.error(`Error checking existing user: ${err}`);
-          return reject(err);
-        }
+// Создание пользователя
+export const createUser = async ({ name, email, password, role = 'user' }) => {
+  try {
+    logger.info('👉 createUser START', { name, email });
 
-        if (row) {
-          return reject(new Error('User already exists'));
-        }
+    // Проверяем существование пользователя
+    const existingUser = await db.get('SELECT * FROM users WHERE email = ?', [email]);
+    logger.info('👉 existingUser:', existingUser);
 
-        const password_hash = await hashPassword(password);
-
-        db.run(
-          `INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)`,
-          [name, email, password_hash, role],
-          function (err) {
-            if (err) {
-              logger.error(`Error inserting new user: ${err}`);
-              return reject(err);
-            }
-
-            logger.info(`User ${email} created successfully`);
-            resolve({
-              id: this.lastID,
-              name,
-              email,
-              role
-            });
-          }
-        );
-      });
-    } catch (e) {
-      logger.error(`Error in createUser: ${e}`);
-      reject(e);
+    if (existingUser) {
+      throw new Error('User already exists');
     }
-  });
+
+    const password_hash = await hashPassword(password);
+    logger.info('👉 password hashed');
+
+    const result = await db.run(
+      `INSERT INTO users (name, email, password, role)
+       VALUES (?, ?, ?, ?)`,
+      [name, email, password_hash, role]
+    );
+
+    logger.info('👉 insert result:', result);
+
+    // Получаем нового пользователя
+    const newUser = await db.get(
+      'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
+      [result.lastID]
+    );
+
+    logger.info('👉 newUser:', newUser);
+
+    return newUser;
+  } catch (e) {
+    logger.error('❌ CREATE USER ERROR:', e);
+    throw e; // контроллер обработает ошибку
+  }
 };
 
-export const authenticateUser = ({ email, password }) => {
-  return new Promise((resolve, reject) => {
-    try {
-      db.get(`SELECT * FROM users WHERE email = ?`, [email], async (err, user) => {
-        if (err) {
-          logger.error(`Error fetching user: ${err}`);
-          return reject(err);
-        }
+// Аутентификация пользователя
+export const authenticateUser = async ({ email, password }) => {
+  try {
+    const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
 
-        if (!user) {
-          return reject(new Error('User not found'));
-        }
-
-        const isPasswordValid = await comparePassword(password, user.password);
-        if (!isPasswordValid) {
-          return reject(new Error('Invalid password'));
-        }
-
-        logger.info(`User ${email} authenticated successfully`);
-        resolve({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        });
-      });
-    } catch (e) {
-      logger.error(`Error in authenticateUser: ${e}`);
-      reject(e);
+    if (!user) {
+      throw new Error('User not found');
     }
-  });
+
+    const isPasswordValid = await comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    logger.info(`User ${email} authenticated successfully`);
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  } catch (e) {
+    logger.error('❌ AUTHENTICATE USER ERROR:', e);
+    throw e;
+  }
 };

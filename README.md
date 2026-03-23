@@ -1,14 +1,12 @@
 # Acquisitions Application
 
-A Node.js application using Express.js, Neon Database, and Drizzle ORM with comprehensive Docker support for both development and production environments.
+A Node.js application using Express.js with comprehensive Docker support for both development and production environments.
 
 ## 🏗️ Architecture
 
 - **Backend**: Node.js with Express.js
-- **Database**: Neon (PostgreSQL-compatible serverless database)
-- **ORM**: Drizzle ORM
-- **Development DB**: Neon Local (local proxy for Neon)
-- **Production DB**: Neon Cloud Database
+- **Database (Development)**: SQLite
+- **Database (Production)**: PostgreSQL via Neon (serverless)
 - **Containerization**: Docker with multi-stage builds
 
 ## 📋 Prerequisites
@@ -19,63 +17,54 @@ A Node.js application using Express.js, Neon Database, and Drizzle ORM with comp
 
 ## 🚀 Quick Start
 
-### Development Environment (with Neon Local)
+### Development Environment (SQLite)
 
 1. **Clone and setup**:
    ```bash
    git clone <your-repo-url>
    cd acquisitions
+   npm install
    ```
 
-2. **Configure environment** (optional):
+2. **Start development environment**:
    ```bash
-   # Copy and modify if needed
-   cp .env.development.example .env.development
-   ```
-
-3. **Start development environment**:
-   ```bash
-   # Start app with Neon Local proxy
+   # With Docker (recommended)
    docker-compose -f docker-compose.dev.yml up --build
    
-   # Or with additional tools (Drizzle Studio)
-   docker-compose -f docker-compose.dev.yml --profile tools up --build
+   # Or locally with Node.js
+   npm run dev
    ```
 
-4. **Access the application**:
-   - Application: http://localhost:3000
-   - Drizzle Studio (if started): http://localhost:4983
-   - Neon Local Database: localhost:5432
+3. **Access the application**:
+   - Application: http://localhost:3001 (Docker) or http://localhost:3000 (local)
 
 ### Production Environment
 
 1. **Configure production environment**:
    ```bash
    cp .env.production .env.production.local
-   # Edit .env.production.local with your actual Neon Cloud Database URL
+   # Edit .env.production.local with your Neon PostgreSQL connection string
+   # Example: postgresql://user:password@host.neon.tech/dbname
    ```
 
 2. **Start production environment**:
    ```bash
-   # Load production environment and start
-   docker-compose -f docker-compose.prod.yml --env-file .env.production.local up --build -d
-   
-   # With nginx reverse proxy
-   docker-compose -f docker-compose.prod.yml --env-file .env.production.local --profile proxy up -d
-   
-   # With monitoring
-   docker-compose -f docker-compose.prod.yml --env-file .env.production.local --profile monitoring up -d
+   # TODO: DevOps - Setup and start production environment
+   # - Configure DATABASE_URL environment variable with Neon PostgreSQL connection
+   # - Deploy using docker-compose.prod.yml
+   # - Configure nginx reverse proxy if needed
+   # - Setup monitoring and health checks
    ```
 
-## 📁 Project Structure
+## 🛍️ Project Structure
 
 ```
 acquisitions/
 ├── src/                          # Application source code
 │   ├── config/                   # Configuration files
+│   │   └── database.js          # Database connection (SQLite/PostgreSQL)
 │   ├── controllers/              # Route controllers
 │   ├── middleware/               # Express middleware
-│   ├── models/                   # Drizzle ORM models
 │   ├── routes/                   # API routes
 │   ├── services/                 # Business logic services
 │   ├── utils/                    # Utility functions
@@ -83,16 +72,13 @@ acquisitions/
 │   ├── app.js                    # Express app configuration
 │   ├── index.js                  # Application entry point
 │   └── server.js                 # Server setup
-├── drizzle/                      # Database migrations
+├── db/                           # SQLite database (development)
 ├── logs/                         # Application logs
 ├── Dockerfile                    # Multi-stage Docker build
-├── docker-compose.dev.yml        # Development with Neon Local
-├── docker-compose.prod.yml       # Production setup
+├── docker-compose.dev.yml        # Development with SQLite
+├── docker-compose.prod.yml       # Production setup (PostgreSQL)
 ├── .env.development             # Development environment vars
 ├── .env.production              # Production environment template
-├── .env.example                 # Environment variables example
-├── database.js                  # Database connection setup
-├── drizzle.config.js            # Drizzle ORM configuration
 └── package.json                 # Node.js dependencies
 ```
 

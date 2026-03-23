@@ -19,11 +19,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "db:migrate": "drizzle-kit migrate --config /app/drizzle.config.js",
-    "db:generate": "drizzle-kit generate --config /app/drizzle.config.js",
-    "db:studio": "drizzle-kit studio --config /app/drizzle.config.js",
-    "dev:docker": "sh ./scripts/dev.sh"
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
